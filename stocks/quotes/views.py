@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
-from .models import Stock
+# from .models import Stock
+from .models import StockItem
 from .forms import StockForm
 from django.contrib import messages
 
@@ -38,7 +39,7 @@ def add_stock(request):
             messages.success(request, ("Stock Has Been Added!"))
             return redirect('add_stock')
     else:
-        ticker = Stock.objects.all()
+        ticker = StockItem.objects.all()
         output = []
         for ticker_item in ticker:
             api_request = requests.get("https://cloud.iexapis.com/stable/stock/" + str(ticker_item) + "/quote?token=pk_8e85210a28d7425eadcbe2bf2a7b1072")
@@ -52,11 +53,11 @@ def add_stock(request):
         return render(request,'add_stock.html',{'ticker': ticker, 'output': output})
 
 def delete(request, stock_id):
-    item = Stock.objects.get(pk=stock_id)
+    item = StockItem.objects.get(pk=stock_id)
     item.delete()
     messages.success(request,("Stock Has Been Deleted!"))
     return redirect(delete_stock)
 
 def delete_stock(request):
-    ticker = Stock.objects.all()
+    ticker = StockItem.objects.all()
     return render(request,'delete_stock.html',{'ticker': ticker})
