@@ -8,5 +8,5 @@ urlpatterns = [
     # path('register/', v.register, name="register"),
     path('register/', include('register.urls')),
     path('', include('quotes.urls')),
-    # path('', include('django.contrib.auth.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
 ]

@@ -5,4 +5,5 @@ from .models import StockItem
 class StockForm(forms.ModelForm):
     class Meta:
         model = StockItem
-        fields = ["ticker"]
+        # fields = ["ticker"]
+        fields = '__all__'

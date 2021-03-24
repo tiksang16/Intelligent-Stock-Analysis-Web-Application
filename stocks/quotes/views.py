@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from .models import StockItem
 from .forms import StockForm
 from django.contrib import messages
+from django.http import HttpResponse, HttpResponseRedirect
 
 #pk_8e85210a28d7425eadcbe2bf2a7b1072
 def home(request):
@@ -35,11 +36,19 @@ def add_stock(request):
         form = StockForm(request.POST or None)
 
         if form.is_valid():
-            form.save()
-            messages.success(request, ("Stock Has Been Added!"))
-            return redirect('add_stock')
+            n = form.cleaned_data["ticker"]
+            t = StockItem(ticker=n)
+            t.save()
+            # form.save()
+            # messages.success(request, ("Stock Has Been Added!"))
+            # request.user.stockuser.add()
+            request.user.stockitem.add(t)
+            # return redirect('add_stock')
+            return HttpRes
+
     else:
         ticker = StockItem.objects.all()
+        print(ticker)
         output = []
         for ticker_item in ticker:
             api_request = requests.get("https://cloud.iexapis.com/stable/stock/" + str(ticker_item) + "/quote?token=pk_8e85210a28d7425eadcbe2bf2a7b1072")
