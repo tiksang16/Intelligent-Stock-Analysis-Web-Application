@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from predictions import views as pv
 
 urlpatterns = [
     path('', views.home, name="home"),
@@ -7,4 +8,5 @@ urlpatterns = [
     path('add_stock.html', views.add_stock, name="add_stock"),
     path('delete/<stock_id>', views.delete, name="delete"),
     path('delete_stock.html', views.delete_stock, name="delete_stock"),
+    path('arima.html', pv.home, name="arima")
 ]

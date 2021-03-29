@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'quotes.apps.QuotesConfig',
     'register.apps.RegisterConfig',
     "crispy_forms",
+    'predictions.apps.PredictionsConfig',
 ]
 
 MIDDLEWARE = [
