@@ -175,17 +175,9 @@
                           
                             <tr>
                                 <td>
-                                    {% set isBreak = False %}
-                                    {% for i in tw_list %}
-                                        {% if 3 == i %}
-                                            {% set isBreak = true %}
-                                        {% endif %}
-                                        {% if isBreak %}
-                                        
-                                        {% else %}
-                                            {{tw_list}}<br>
-                                        {% endif %}
-                                    {% endfor %}</td>
+                                    {% for i in tweeters_list %}
+                                    {{tweeters_list}}
+                                    {% endfor %}
                                 <td><span></span></td>
                                 <td><span></span></td>
                                 <td><span class="badge badge-success"></span></td>

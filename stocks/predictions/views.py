@@ -302,7 +302,11 @@ def insertintotable(request):
             print("Tweets Polarity: Overall Negative")
             print("##############################################################################")
             tw_pol="Overall Negative"
-        return global_polarity,tw_list,tw_pol,pos,neg,neutral
+        tweeters_list=[]
+        for i in range(0,5):
+            tweeters_list.append(tw_list[i])
+
+        return global_polarity,tweeters_list,tw_pol,pos,neg,neutral
 
 
     def recommending(df, global_polarity,today_stock,mean):
@@ -355,7 +359,7 @@ def insertintotable(request):
 
         arima_pred, error_arima=ARIMA_ALGO(df)
         df, lr_pred, forecast_set,mean,error_lr=LIN_REG_ALGO(df)
-        polarity,tw_list,tw_pol,pos,neg,neutral = retrieving_tweets_polarity(quote)
+        polarity,tweeters_list,tw_pol,pos,neg,neutral = retrieving_tweets_polarity(quote)
         
         idea, decision=recommending(df, polarity,today_stock,mean)
         print()
@@ -372,7 +376,7 @@ def insertintotable(request):
         return render(request,'arima.html',{'quote':quote,'arima_pred':round(arima_pred,2),
                                'lr_pred':round(lr_pred,2),'open_s':today_stock['Open'].to_string(index=False),
                                'close_s':today_stock['Close'].to_string(index=False),'adj_close':today_stock['Adj Close'].to_string(index=False),
-                               'tw_list':tw_list,'tw_pol':tw_pol,'idea':idea,'decision':decision,'high_s':today_stock['High'].to_string(index=False),
+                               'tweeters_list':tweeters_list,'tw_pol':tw_pol,'idea':idea,'decision':decision,'high_s':today_stock['High'].to_string(index=False),
                                'low_s':today_stock['Low'].to_string(index=False),'vol':today_stock['Volume'].to_string(index=False),
                                'forecast_set':forecast_set,'error_lr':round(error_lr,2),'error_arima':round(error_arima,2)})
     
