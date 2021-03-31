@@ -7,11 +7,12 @@ from sklearn.linear_model import LinearRegression
 from sklearn import preprocessing, model_selection, svm
 
 
+
 from alpha_vantage.timeseries import TimeSeries
 from statsmodels.tsa.arima_model import ARIMA
 from sklearn.metrics import mean_squared_error
-# import matplotlib.pyplot as plt
-# plt.style.use('ggplot')
+import matplotlib.pyplot as plt
+plt.style.use('ggplot')
 import math, random
 from datetime import datetime
 import datetime as dt
@@ -30,7 +31,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 # Create your views here.
 
 def home(request):
-    return render(request,'arima.html')
+    return render(request,'predict.html')
 
 
 # def linerregression(request):
@@ -122,10 +123,10 @@ def insertintotable(request):
             Quantity_date['Price'] = Quantity_date['Price'].map(lambda x: float(x))
             Quantity_date = Quantity_date.fillna(Quantity_date.bfill())
             Quantity_date = Quantity_date.drop(['Date'],axis =1)
-            # fig = plt.figure(figsize=(7.2,4.8),dpi=65)
-            # plt.plot(Quantity_date)
-            # plt.savefig('static/Trends.png')
-            # plt.close(fig)
+            fig = plt.figure(figsize=(7.2,4.8),dpi=65)
+            plt.plot(Quantity_date)
+            plt.savefig('static/Trends.png')
+            plt.close(fig)
             
             quantity = Quantity_date.values
             size = int(len(quantity) * 0.80)
@@ -303,8 +304,16 @@ def insertintotable(request):
             print("##############################################################################")
             tw_pol="Overall Negative"
         tweeters_list=[]
-        for i in range(0,5):
-            tweeters_list.append(tw_list[i])
+
+        if len(tw_list) >= 5 :
+            for i in range(0,4):
+                tweeters_list.append(tw_list[i])
+        elif len(tw_list) == 0:
+            tweeters_list.append("No Tweets Can Be Retrieved!")
+        else:
+            for i in range(0,len(tw_list)):
+                tweeters_list.append(tw_list[i])
+        
 
         return global_polarity,tweeters_list,tw_pol,pos,neg,neutral
 
