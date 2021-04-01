@@ -11,8 +11,8 @@ from sklearn import preprocessing, model_selection, svm
 from alpha_vantage.timeseries import TimeSeries
 from statsmodels.tsa.arima_model import ARIMA
 from sklearn.metrics import mean_squared_error
-import matplotlib.pyplot as plt
-plt.style.use('ggplot')
+# import matplotlib.pyplot as plt
+# plt.style.use('ggplot')
 import math, random
 from datetime import datetime
 import datetime as dt
@@ -28,8 +28,11 @@ nltk.download('punkt')
 
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
+@login_required
 def home(request):
     return render(request,'predict.html')
 
@@ -65,7 +68,7 @@ def home(request):
 #     forecast_prediction = clf.predict(X_forecast)
 #     forecast = forecast_prediction.tolist()
 #     return render(request,'predict.html',{'confidence' : confidence,'forecast': forecast,'ticker_value':ticker_value,'number_of_days':number_of_days})
-
+@login_required
 def insertintotable(request):
     nm = request.POST.get('nm')
 
@@ -123,10 +126,10 @@ def insertintotable(request):
             Quantity_date['Price'] = Quantity_date['Price'].map(lambda x: float(x))
             Quantity_date = Quantity_date.fillna(Quantity_date.bfill())
             Quantity_date = Quantity_date.drop(['Date'],axis =1)
-            fig = plt.figure(figsize=(7.2,4.8),dpi=65)
-            plt.plot(Quantity_date)
-            plt.savefig('static/Trends.png')
-            plt.close(fig)
+            # fig = plt.figure(figsize=(7.2,4.8),dpi=65)
+            # plt.plot(Quantity_date)
+            # plt.savefig('static/Trends.png')
+            # plt.close(fig)
             
             quantity = Quantity_date.values
             size = int(len(quantity) * 0.80)
@@ -382,7 +385,7 @@ def insertintotable(request):
         #                        low_s=today_stock['Low'].to_string(index=False),vol=today_stock['Volume'].to_string(index=False),
         #                        forecast_set=forecast_set,error_lr=round(error_lr,2),error_arima=round(error_arima,2))
 
-        return render(request,'arima.html',{'quote':quote,'arima_pred':round(arima_pred,2),
+        return render(request,'predict.html',{'quote':quote,'arima_pred':round(arima_pred,2),
                                'lr_pred':round(lr_pred,2),'open_s':today_stock['Open'].to_string(index=False),
                                'close_s':today_stock['Close'].to_string(index=False),'adj_close':today_stock['Adj Close'].to_string(index=False),
                                'tweeters_list':tweeters_list,'tw_pol':tw_pol,'idea':idea,'decision':decision,'high_s':today_stock['High'].to_string(index=False),

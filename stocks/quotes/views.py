@@ -3,10 +3,12 @@ from django.shortcuts import render, redirect
 from .models import StockItem
 from .forms import StockForm
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 # from django.http import HttpResponse, HttpResponseRedirect
 
 #pk_8e85210a28d7425eadcbe2bf2a7b1072
+@login_required
 def home(request):
     import requests
     import json
@@ -26,10 +28,11 @@ def home(request):
 
     return render(request, 'home.html', {'api': api})
 
+@login_required
 def about(request):
     return render(request,'about.html',{})
 
-
+@login_required
 def add_stock(request):
     import requests
     import json
@@ -61,12 +64,14 @@ def add_stock(request):
 
         return render(request,'add_stock.html',{'ticker': ticker, 'output': output})
 
+@login_required
 def delete(request, stock_id):
     item = StockItem.objects.get(pk=stock_id)
     item.delete()
     messages.success(request,("Stock Has Been Deleted!"))
     return redirect(delete_stock)
 
+@login_required
 def delete_stock(request):
     ticker = StockItem.objects.all()
     return render(request,'delete_stock.html',{'ticker': ticker})
