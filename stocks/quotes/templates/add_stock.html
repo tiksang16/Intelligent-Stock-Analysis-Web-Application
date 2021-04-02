@@ -5,7 +5,7 @@
 
 <h1>Add Stock...</h 1>
 <br/><br/> 
-<form action="{% url 'add_stock' %}"class="d-flex" method="POST">{% csrf_token %}
+<form action="{% url 'add_stock' request.user.pk %}"class="d-flex" method="POST">{% csrf_token %}
     <input class="form-control me-2" type="search" placeholder="Add to Portfolio" aria-label="Search" name="ticker">
     <button class="btn btn-outline-secondary" type="submit">Add Stock</button>
 </form>
@@ -44,9 +44,9 @@
   </div>
 {% endif %}
 <br/><br/>
-{% for item in ticker %}
+<!-- {% for item in ticker %}
         {{ item }} - <a href="{% url 'delete' item.id %}" class="btn btn-secondary ">Delete</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-{% endfor %}
+{% endfor %} -->
 
 
 

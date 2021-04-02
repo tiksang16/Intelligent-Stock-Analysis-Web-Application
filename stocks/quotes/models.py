@@ -19,8 +19,8 @@ from django.contrib import admin
 #         return self.name
 
 class StockItem(models.Model):
-    # stockuser = models.ForeignKey(User, on_delete=models.CASCADE, related_name="stockitem",null=True)
-    ticker = models.CharField(max_length=10)
+    stockuser = models.ForeignKey(User, on_delete=models.CASCADE, blank=True,null=True)
+    ticker = models.CharField(max_length=10, null=True, blank=True)
 
     def __str__(self):
         return self.ticker
