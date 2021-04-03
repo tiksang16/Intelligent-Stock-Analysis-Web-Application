@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% load static %} 
 
 <section class="columns is-mobile is-centered">
     <form action="{% url 'insertintotable' %}" method="post">{% csrf_token %}
@@ -92,6 +93,42 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-title">
+                    <h4>RECENT TRENDS IN {{quote}} STOCK PRICES</h4>
+                </div>
+                <div class="sales-chart">
+                    <img src="{% static 'images/Trends.png' %}" />
+                </div>
+            </div>
+            <!-- /# card -->
+        </div>
+        <!-- /# column -->
+        
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-title">
+                    <h4>ARIMA MODEL ACCURACY</h4>
+                </div>
+                <div class="sales-chart">
+                    <img src="{% static 'images/ARIMA.png' %}" />
+                </div>
+            </div>
+            <!-- /# card -->
+        </div>
+        <!-- /# column -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-title">
+                    <h4>LINEAR REGRESSION MODEL ACCURACY</h4>
+                </div>
+                <div class="team-chart">
+                    <img src="{% static 'images/LR.png' %}" />
+                </div>
+            </div>
+        </div>
 
     <!-- ARIMA PRED -->
     <div class="col-md-4">
