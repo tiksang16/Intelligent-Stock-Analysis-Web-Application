@@ -9,5 +9,6 @@ urlpatterns = [
     path('add_stock/<pk>', views.add_stock, name="add_stock"),
     path('delete/<stock_id>', views.delete, name="delete"),
     path('delete_stock/<pk>', views.delete_stock, name="delete_stock"),
+    path('chart.html', views.chart, name="chart"),
     # path('predict.html', pv.home, name="arima")
 ]

@@ -70,7 +70,7 @@ def home(request):
 #     return render(request,'predict.html',{'confidence' : confidence,'forecast': forecast,'ticker_value':ticker_value,'number_of_days':number_of_days})
 @login_required
 def insertintotable(request):
-    nm = request.POST.get('nm')
+    stocksymbol = request.POST.get('stocksymbol')
 
     #**************** FUNCTIONS TO FETCH DATA ***************************
     def get_historical(quote):
@@ -474,12 +474,13 @@ def insertintotable(request):
 
 
     #**************GET DATA ***************************************
-    quote=nm
+    quote=stocksymbol
     #Try-except to check if valid stock symbol
     try:
         get_historical(quote)
     except:
-        return render_template('index.html',not_found=True)
+        not_found = True
+        return render(request,'home.html', {'not_found':not_found})
     else:
     
         #************** PREPROCESSUNG ***********************
@@ -508,12 +509,7 @@ def insertintotable(request):
         print("Forecasted Prices for Next 7 days:")
         print(forecast_set)
         today_stock=today_stock.round(2)
-        # return render('arima.html',quote=quote,arima_pred=round(arima_pred,2),
-        #                        lr_pred=round(lr_pred,2),open_s=today_stock['Open'].to_string(index=False),
-        #                        close_s=today_stock['Close'].to_string(index=False),adj_close=today_stock['Adj Close'].to_string(index=False),
-        #                        tw_list=tw_list,tw_pol=tw_pol,idea=idea,decision=decision,high_s=today_stock['High'].to_string(index=False),
-        #                        low_s=today_stock['Low'].to_string(index=False),vol=today_stock['Volume'].to_string(index=False),
-        #                        forecast_set=forecast_set,error_lr=round(error_lr,2),error_arima=round(error_arima,2))
+       
 
         return render(request,'predict.html',{'quote':quote,'arima_pred':round(arima_pred,2),
                                'lr_pred':round(lr_pred,2),'open_s':today_stock['Open'].to_string(index=False),
@@ -521,4 +517,3 @@ def insertintotable(request):
                                'tweeters_list':tweeters_list,'tw_pol':tw_pol,'idea':idea,'decision':decision,'high_s':today_stock['High'].to_string(index=False),
                                'low_s':today_stock['Low'].to_string(index=False),'vol':today_stock['Volume'].to_string(index=False),
                                'forecast_set':forecast_set,'error_lr':round(error_lr,2),'error_arima':round(error_arima,2)})
-    

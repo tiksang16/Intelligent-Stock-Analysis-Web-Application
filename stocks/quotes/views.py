@@ -80,3 +80,7 @@ def delete_stock(request, pk):
     # ticker = StockItem.objects.all()
     ticker = StockItem.objects.filter(stockuser_id = pk)
     return render(request,'delete_stock.html',{'ticker': ticker})
+
+@login_required
+def chart(request):
+    return render(request,'chart.html')

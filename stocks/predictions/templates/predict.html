@@ -3,7 +3,31 @@
 {% block content %}
 {% load static %} 
 
-<section class="columns is-mobile is-centered">
+  <div id="cover-caption">
+      <div class="container">
+          <div class="row text-white">
+              <div class="col-xl-5 col-lg-6 col-md-8 col-sm-10 mx-auto text-center form p-4">
+                  <!-- <h1 class="display-4 " style="color:blue;">ENTER THE STOCK SYMBOL TO PREDICT THE FUTURE!</h1> -->
+                  <div class="px-2">
+                      <form action="{% url 'insertintotable' %}" method="post" class="justify-content-center">{% csrf_token %}
+                          <div class="form-group">
+                              {% if not_found %}
+                                <div class="alert alert-danger" style="color: red;" role="alert">
+                                Stock Symbol (Ticker) Not Found. Please Enter a Valid Stock Symbol
+                                </div>
+                              {% endif %}
+                              <input type="text" name="stocksymbol" class="form-control" placeholder="Stock Symbol">
+                          </div>
+                          <br>
+                          <button type="submit" class="btn btn-primary btn-lg">Predict</button>
+                      </form>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+
+<!-- <section class="columns is-mobile is-centered">
     <form action="{% url 'insertintotable' %}" method="post">{% csrf_token %}
         <div class="label">Enter Ticker of Company
             <br>
@@ -12,7 +36,7 @@
         <br>
         <input type="submit" value="Predict" class="button is-link is-medium is-rounded">
     </form>
-</section>
+</section> -->
 <br>
     <div class="col-md-2">
         <div class="card bg-primary p-20">
@@ -129,7 +153,7 @@
             </div>
         </div>
     </div> -->
-    
+
     <!-- ARIMA PRED -->
     <div class="col-md-4">
         <div class="card bg-success p-20">
