@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 # import quandl
 import pandas as pd
 import numpy as np
