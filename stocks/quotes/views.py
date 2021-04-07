@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 # from django.http import HttpResponse, HttpResponseRedirect
 
 #pk_8e85210a28d7425eadcbe2bf2a7b1072
-@login_required
+
 def home(request):
     import requests
     import json
