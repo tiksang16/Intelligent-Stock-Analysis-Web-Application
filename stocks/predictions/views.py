@@ -13,7 +13,11 @@ from sklearn import preprocessing, model_selection, svm
 from alpha_vantage.timeseries import TimeSeries
 from statsmodels.tsa.arima_model import ARIMA
 from sklearn.metrics import mean_squared_error
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
+from matplotlib import pyplot as plt
+
 plt.style.use('ggplot')
 import math, random
 from datetime import datetime
@@ -426,7 +430,7 @@ def insertintotable(request):
         # Equal aspect ratio ensures that pie is drawn as a circle
         ax1.axis('equal')  
         plt.tight_layout()
-        plt.savefig('sa.png')
+        plt.savefig('predictions/static/sa.png')
         plt.close(fig)
 
         if global_polarity>0:
@@ -505,7 +509,7 @@ def insertintotable(request):
 
 
         arima_pred, error_arima=ARIMA_ALGO(df)
-        # lstm_pred, error_lstm=LSTM_ALGO(df)
+        lstm_pred, error_lstm=LSTM_ALGO(df)
         df, lr_pred, forecast_set,mean,error_lr=LIN_REG_ALGO(df)
         polarity,tweeters_list,tw_pol,pos,neg,neutral,sizes = retrieving_tweets_polarity(quote)
         
@@ -516,16 +520,16 @@ def insertintotable(request):
         today_stock=today_stock.round(2)
        
 
-        return render(request,'predict.html',{'quote':quote,'arima_pred':round(arima_pred,2),
-                               'lr_pred':round(lr_pred,2),'open_s':today_stock['Open'].to_string(index=False),
-                               'close_s':today_stock['Close'].to_string(index=False),'adj_close':today_stock['Adj Close'].to_string(index=False),
-                               'tweeters_list':tweeters_list,'tw_pol':tw_pol,'pos':pos,'neg':neg,'neutral':neutral,'idea':idea,'decision':decision,'high_s':today_stock['High'].to_string(index=False),
-                               'low_s':today_stock['Low'].to_string(index=False),'vol':today_stock['Volume'].to_string(index=False),
-                               'forecast_set':forecast_set,'error_lr':round(error_lr,2),'error_arima':round(error_arima,2)})
-
-        # return render(request,'predict.html',{'quote':quote,'arima_pred':round(arima_pred,2),'lstm_pred':round(lstm_pred,2),
+        # return render(request,'predict.html',{'quote':quote,'arima_pred':round(arima_pred,2),
         #                        'lr_pred':round(lr_pred,2),'open_s':today_stock['Open'].to_string(index=False),
         #                        'close_s':today_stock['Close'].to_string(index=False),'adj_close':today_stock['Adj Close'].to_string(index=False),
-        #                        'tweeters_list':tweeters_list,'tw_pol':tw_pol,'idea':idea,'decision':decision,'high_s':today_stock['High'].to_string(index=False),
+        #                        'tweeters_list':tweeters_list,'tw_pol':tw_pol,'pos':pos,'neg':neg,'neutral':neutral,'idea':idea,'decision':decision,'high_s':today_stock['High'].to_string(index=False),
         #                        'low_s':today_stock['Low'].to_string(index=False),'vol':today_stock['Volume'].to_string(index=False),
-        #                        'forecast_set':forecast_set,'error_lr':round(error_lr,2),'error_arima':round(error_arima,2),'error_lstm':round(error_lstm,2)})
+        #                        'forecast_set':forecast_set,'error_lr':round(error_lr,2),'error_arima':round(error_arima,2)})
+
+        return render(request,'predict.html',{'quote':quote,'arima_pred':round(arima_pred,2),'lstm_pred':round(lstm_pred,2),
+                               'lr_pred':round(lr_pred,2),'open_s':today_stock['Open'].to_string(index=False),
+                               'close_s':today_stock['Close'].to_string(index=False),'adj_close':today_stock['Adj Close'].to_string(index=False),
+                               'tweeters_list':tweeters_list,'tw_pol':tw_pol,'idea':idea,'decision':decision,'high_s':today_stock['High'].to_string(index=False),
+                               'low_s':today_stock['Low'].to_string(index=False),'vol':today_stock['Volume'].to_string(index=False),
+                               'forecast_set':forecast_set,'error_lr':round(error_lr,2),'error_arima':round(error_arima,2),'error_lstm':round(error_lstm,2)})
