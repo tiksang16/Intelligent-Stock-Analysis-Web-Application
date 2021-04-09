@@ -349,6 +349,8 @@ def insertintotable(request):
         print("Linear Regression RMSE:",error_lr)
         print("##############################################################################")
         return df, lr_pred, forecast_set, mean, error_lr
+
+        
     #**************** SENTIMENT ANALYSIS **************************
     def retrieving_tweets_polarity(symbol):
         stock_ticker_map = pd.read_csv('Yahoo-Finance-Ticker-Symbols.csv')
