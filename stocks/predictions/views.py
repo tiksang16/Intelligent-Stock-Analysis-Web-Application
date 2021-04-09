@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 # import quandl
 import pandas as pd
+
 import numpy as np
 # import datetime
 from sklearn.linear_model import LinearRegression
@@ -26,6 +27,7 @@ from . import constants as ct
 from . import Tweet
 import nltk
 nltk.download('punkt')
+
 
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -72,6 +74,7 @@ def home(request):
 @login_required
 def insertintotable(request):
     stocksymbol = request.POST.get('stocksymbol')
+    
 
     #**************** FUNCTIONS TO FETCH DATA ***************************
     def get_historical(quote):
@@ -127,10 +130,10 @@ def insertintotable(request):
             Quantity_date['Price'] = Quantity_date['Price'].map(lambda x: float(x))
             Quantity_date = Quantity_date.fillna(Quantity_date.bfill())
             Quantity_date = Quantity_date.drop(['Date'],axis =1)
-            # fig = plt.figure(figsize=(7.2,4.8),dpi=65)
-            # plt.plot(Quantity_date)
-            # plt.savefig('/images/Trends.png')
-            # plt.close(fig)
+            fig = plt.figure(figsize=(7.2,4.8),dpi=65)
+            plt.plot(Quantity_date)
+            plt.savefig('predictions/static/trends.png')
+            plt.close(fig)
             
             quantity = Quantity_date.values
             size = int(len(quantity) * 0.80)
@@ -139,12 +142,12 @@ def insertintotable(request):
             predictions = arima_model(train, test)
             
             #plot graph
-            # fig = plt.figure(figsize=(7.2,4.8),dpi=65)
-            # plt.plot(test,label='Actual Price')
-            # plt.plot(predictions,label='Predicted Price')
-            # plt.legend(loc=4)
-            # plt.savefig('images/ARIMA.png')
-            # plt.close(fig)
+            fig = plt.figure(figsize=(7.2,4.8),dpi=65)
+            plt.plot(test,label='Actual Price')
+            plt.plot(predictions,label='Predicted Price')
+            plt.legend(loc=4)
+            plt.savefig('predictions/static/arima.png')
+            plt.close(fig)
             print()
             print("##############################################################################")
             arima_pred=predictions[-2]
@@ -258,13 +261,13 @@ def insertintotable(request):
         
         #Getting original prices back from scaled values
         predicted_stock_price=sc.inverse_transform(predicted_stock_price)
-        # fig = plt.figure(figsize=(7.2,4.8),dpi=65)
-        # plt.plot(real_stock_price,label='Actual Price')  
-        # plt.plot(predicted_stock_price,label='Predicted Price')
+        fig = plt.figure(figsize=(7.2,4.8),dpi=65)
+        plt.plot(real_stock_price,label='Actual Price')  
+        plt.plot(predicted_stock_price,label='Predicted Price')
           
-        # plt.legend(loc=4)
-        # plt.savefig('LSTM.png')
-        # plt.close(fig)
+        plt.legend(loc=4)
+        plt.savefig('predictions/static/lstm.png')
+        plt.close(fig)
         
         
         error_lstm = math.sqrt(mean_squared_error(real_stock_price, predicted_stock_price))
@@ -323,14 +326,14 @@ def insertintotable(request):
         #Testing
         y_test_pred=clf.predict(X_test)
         y_test_pred=y_test_pred*(1.04)
-        # import matplotlib.pyplot as plt2
-        # fig = plt2.figure(figsize=(7.2,4.8),dpi=65)
-        # plt2.plot(y_test,label='Actual Price' )
-        # plt2.plot(y_test_pred,label='Predicted Price')
+        import matplotlib.pyplot as plt2
+        fig = plt2.figure(figsize=(7.2,4.8),dpi=65)
+        plt2.plot(y_test,label='Actual Price' )
+        plt2.plot(y_test_pred,label='Predicted Price')
         
-        # plt2.legend(loc=4)
-        # plt2.savefig('images/LR.png')
-        # plt2.close(fig)
+        plt2.legend(loc=4)
+        plt2.savefig('predictions/static/lr.png')
+        plt2.close(fig)
         
         error_lr = math.sqrt(mean_squared_error(y_test, y_test_pred))
         
@@ -415,14 +418,14 @@ def insertintotable(request):
         labels=['Positive','Negative','Neutral']
         sizes = [pos,neg,neutral]
         explode = (0, 0, 0)
-        # fig = plt.figure(figsize=(7.2,4.8),dpi=65)
-        # fig1, ax1 = plt.subplots(figsize=(7.2,4.8),dpi=65)
-        # ax1.pie(sizes, explode=explode, labels=labels, autopct='%1.1f%%', startangle=90)
+        fig = plt.figure(figsize=(7.2,4.8),dpi=65)
+        fig1, ax1 = plt.subplots(figsize=(7.2,4.8),dpi=65)
+        ax1.pie(sizes, explode=explode, labels=labels, autopct='%1.1f%%', startangle=90)
         # Equal aspect ratio ensures that pie is drawn as a circle
-        # ax1.axis('equal')  
-        # plt.tight_layout()
-        # plt.savefig('images/SA.png')
-        # plt.close(fig)
+        ax1.axis('equal')  
+        plt.tight_layout()
+        plt.savefig('sa.png')
+        plt.close(fig)
 
         if global_polarity>0:
             print()

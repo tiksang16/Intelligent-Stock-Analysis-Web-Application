@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
+{% load static %}
+
 
 {% block content %}
 <title>{% block title %}Stock Predictions{% endblock %}</title>
 
-{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -133,6 +135,55 @@
                 </div>
 
                 <div class="row">
+
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-title">
+                                <h4>RECENT TRENDS IN {{quote}} STOCK PRICES</h4>
+                            </div>
+                            <div class="sales-chart">
+                                <img src="{% static 'trends.png' %}" />
+                            </div>
+                        </div>
+                        <!-- /# card -->
+                    </div>
+                    <!-- /# column -->
+                    
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-title">
+                                <h4>ARIMA MODEL ACCURACY</h4>
+                            </div>
+                            <div class="sales-chart">
+                                <img src="{% static 'arima.png' %}" />
+                            </div>
+                        </div>
+                        <!-- /# card -->
+                    </div>
+
+                    <!-- /# column -->
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-title">
+                                <h4>LSTM MODEL ACCURACY</h4>
+                            </div>
+                            <div class="team-chart">
+                                <img src="{% static 'lstm.png' %}" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-title">
+                                <h4>LINEAR REGRESSION MODEL ACCURACY</h4>
+                            </div>
+                            <div class="team-chart">
+                                <img src="{% static 'lr.png' %}" />
+                            </div>
+                        </div>
+                    </div>
+
+
                     <!-- ARIMA PRED -->
                     <div class="col-md-4">
                         <div class="card bg-success p-20">
@@ -147,6 +198,8 @@
                             </div>
                         </div>
                     </div>
+
+            
                     
                     <!-- LSTM PRED -->
                     <div class="col-md-4">
