@@ -43,7 +43,7 @@ def insertstockdata(request):
     stocksymbol = request.POST.get('stocksymbol')
     
 
-    #**************** FUNCTIONS TO FETCH DATA ***************************
+    #FETCH DATA 
     def get_historical(quote):
         end = datetime.now()
         start = datetime(end.year-2,end.month,end.day)
@@ -116,13 +116,13 @@ def insertstockdata(request):
             plt.savefig('predictions/static/arima.png')
             plt.close(fig)
             print()
-            print("##############################################################################")
+            print("******************************************************************************")
             arima_pred=predictions[-2]
             print("Tomorrow's",quote," Closing Price Prediction by ARIMA:",arima_pred)
             #rmse calculation
             error_arima = math.sqrt(mean_squared_error(test, predictions))
             print("ARIMA RMSE:",error_arima)
-            print("##############################################################################")
+            print("******************************************************************************")
             return arima_pred, error_arima
         
     #-----LSTM SECTION------
@@ -199,7 +199,6 @@ def insertstockdata(request):
         #For lstm, batch_size=power of 2
         
         #Testing
-        ###dataset_test=pd.read_csv('Google_Stock_Price_Test.csv')
         real_stock_price=dataset_test.iloc[:,4:5].values
         
         #To predict, we need stock prices of 7 days before the test set
@@ -249,10 +248,10 @@ def insertstockdata(request):
         
         lstm_pred=forecasted_stock_price[0,0]
         print()
-        print("##############################################################################")
+        print("******************************************************************************")
         print("Tomorrow's ",quote," Closing Price Prediction by LSTM: ",lstm_pred)
         print("LSTM RMSE:",error_lstm)
-        print("##############################################################################")
+        print("******************************************************************************")
         return lstm_pred,error_lstm
 
     #-----LINEAR REGRESSION-----     
@@ -313,14 +312,14 @@ def insertstockdata(request):
         mean=forecast_set.mean()
         lr_pred=forecast_set[0,0]
         print()
-        print("##############################################################################")
+        print("******************************************************************************")
         print("Tomorrow's ",quote," Closing Price Prediction by Linear Regression: ",lr_pred)
         print("Linear Regression RMSE:",error_lr)
-        print("##############################################################################")
+        print("******************************************************************************")
         return df, lr_pred, forecast_set, mean, error_lr
 
         
-    #**************** SENTIMENT ANALYSIS **************************
+    #**************** SENTIMENT ANALYSIS ******************
     def retrieving_tweets_polarity(symbol):
         stock_ticker_map = pd.read_csv('Yahoo-Finance-Ticker-Symbols.csv')
         stock_full_form = stock_ticker_map[stock_ticker_map['Ticker']==symbol]
@@ -346,19 +345,18 @@ def insertstockdata(request):
             tw = tweet.full_text
             #Clean
             tw=p.clean(tw)
-            #print("-------------------------------CLEANED TWEET-----------------------------")
+            
             #Replace &amp; by &
             tw=re.sub('&amp;','&',tw)
             #Remove :
             tw=re.sub(':','',tw)
-            #print("-------------------------------TWEET AFTER REGEX MATCHING-----------------------------")
+           
             #Remove Emojis and Hindi Characters
-            tw=tw.encode('ascii', 'ignore').decode('ascii')
-            #print("-------------------------------TWEET AFTER REMOVING NON ASCII CHARS-----------------------------")
+            tw=tw.encode('ascii', 'ignore').decode('ascii') 
             # print(tw)
 
             blob = TextBlob(tw)
-            polarity = 0 #Polarity of single individual tweet
+            polarity = 0 
             for sentence in blob.sentences:
                    
                 polarity += sentence.sentiment.polarity
@@ -382,9 +380,7 @@ def insertstockdata(request):
         	neg=neg+neutral
         	neutral=20
         print()
-        print("##############################################################################")
-        print("Positive Tweets :",pos,"Negative Tweets :",neg,"Neutral Tweets :",neutral)
-        print("##############################################################################")
+        
         labels=['Positive','Negative','Neutral']
         sizes = [pos,neg,neutral]
         explode = (0, 0, 0)
@@ -399,15 +395,15 @@ def insertstockdata(request):
 
         if global_polarity>0:
             print()
-            print("##############################################################################")
+            print("******************************************************************************")
             print("Tweets Polarity: Overall Positive")
-            print("##############################################################################")
+            print("******************************************************************************")
             tw_pol="Overall Positive"
         else:
             print()
-            print("##############################################################################")
+            print("******************************************************************************")
             print("Tweets Polarity: Overall Negative")
-            print("##############################################################################")
+            print("******************************************************************************")
             tw_pol="Overall Negative"
         tweeters_list=[]
 
@@ -430,23 +426,23 @@ def insertstockdata(request):
                 idea="RISE"
                 decision="BUY"
                 print()
-                print("##############################################################################")
+                print("******************************************************************************")
                 print("According to the ML Predictions and Sentiment Analysis of Tweets, a",idea,"in",quote,"stock is expected => ",decision)
             elif global_polarity <= 0:
                 idea="FALL"
                 decision="SELL"
                 print()
-                print("##############################################################################")
+                print("******************************************************************************")
                 print("According to the ML Predictions and Sentiment Analysis of Tweets, a",idea,"in",quote,"stock is expected => ",decision)
         else:
             idea="FALL"
             decision="SELL"
             print()
-            print("##############################################################################")
+            print("******************************************************************************")
             print("According to the ML Predictions and Sentiment Analysis of Tweets, a",idea,"in",quote,"stock is expected => ",decision)
         return idea, decision
 
-    #**************GET DATA ***************************************
+    #**************GET DATA *****************************
     quote=stocksymbol
     #Try-except to check if valid stock symbol
     try:
@@ -458,11 +454,11 @@ def insertstockdata(request):
     
         #************** PREPROCESSUNG ***********************
         df = pd.read_csv(''+quote+'.csv')
-        print("##############################################################################")
+        print("******************************************************************************")
         print("Today's",quote,"Stock Data: ")
         today_stock=df.iloc[-1:]
         print(today_stock)
-        print("##############################################################################")
+        print("******************************************************************************")
         df = df.dropna()
         code_list=[]
         for i in range(0,len(df)):
