@@ -47,7 +47,7 @@
               <div class="col-xl-5 col-lg-6 col-md-8 col-sm-10 mx-auto text-center form p-4">
                   <h1 class="display-4 " style="color:blue;">ENTER THE STOCK SYMBOL TO PREDICT THE FUTURE!</h1>
                   <div class="px-2">
-                      <form action="{% url 'insertintotable' %}" method="post" class="justify-content-center">{% csrf_token %}
+                      <form action="{% url 'insertstockdata' %}" method="post" class="justify-content-center">{% csrf_token %}
                           <div class="form-group">
                               {% if not_found %}
                                 <div class="alert alert-danger" style="color: red;" role="alert">

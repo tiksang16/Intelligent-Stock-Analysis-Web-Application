@@ -39,7 +39,7 @@
             <td>{{ list_item.ytdChange }}%</td>
             <td>${{ list_item.week52High }}</td>
             <td>${{ list_item.week52Low }}</td>
-            <td><form method="post" action="{% url 'insertintotable' %}">{% csrf_token %}
+            <td><form method="post" action="{% url 'insertstockdata' %}">{% csrf_token %}
               <input type="hidden" name="stocksymbol" value="{{ list_item.symbol }}">
               <a onclick="this.parentNode.submit();">Predict</a>
             </form></td>

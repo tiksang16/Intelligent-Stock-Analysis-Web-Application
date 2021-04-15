@@ -1,19 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-# import quandl
 import pandas as pd
-
 import numpy as np
-# import datetime
 from sklearn.linear_model import LinearRegression
 from sklearn import preprocessing, model_selection, svm
-
-
-
 from alpha_vantage.timeseries import TimeSeries
 from statsmodels.tsa.arima_model import ARIMA
 from sklearn.metrics import mean_squared_error
-# import matplotlib.pyplot as plt
+
 import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
@@ -27,7 +21,7 @@ import tweepy
 import preprocessor as p
 import re
 from textblob import TextBlob
-from . import constants as ct
+from . import TweetAuth as ta
 from . import Tweet
 import nltk
 nltk.download('punkt')
@@ -44,39 +38,8 @@ def home(request):
     return render(request,'predict.html')
 
 
-# def linerregression(request):
-#     # Quandl API key. Create your own key via registering at quandl.com
-#     quandl.ApiConfig.api_key = "9LyAs6SMpaowFKBPiBRT"
-#     #personalapikey=
-#     #other'skey=RHVBxuQQR_xxy8SPBDGV
-#     # Getting input from Templates for ticker_value and number_of_days
-#     ticker_value = request.POST.get('ticker')
-#     number_of_days = request.POST.get('days')
-#     number_of_days = int(number_of_days)
-#     # Fetching ticker values from Quandl API 
-#     df = quandl.get("WIKI/"+ticker_value+"")
-#     df = df[['Adj. Close']]
-#     forecast_out = int(number_of_days)
-#     df['Prediction'] = df[['Adj. Close']].shift(-forecast_out)
-#     # Splitting data for Test and Train
-#     X = np.array(df.drop(['Prediction'],1))
-#     X = preprocessing.scale(X)
-#     X_forecast = X[-forecast_out:]
-#     X = X[:-forecast_out]
-#     y = np.array(df['Prediction'])
-#     y = y[:-forecast_out]
-#     X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, test_size = 0.2)
-#     # Applying Linear Regression
-#     clf = LinearRegression()
-#     clf.fit(X_train,y_train)
-#     # Prediction Score
-#     confidence = clf.score(X_test, y_test)
-#     # Predicting for 'n' days stock data
-#     forecast_prediction = clf.predict(X_forecast)
-#     forecast = forecast_prediction.tolist()
-#     return render(request,'predict.html',{'confidence' : confidence,'forecast': forecast,'ticker_value':ticker_value,'number_of_days':number_of_days})
 @login_required
-def insertintotable(request):
+def insertstockdata(request):
     stocksymbol = request.POST.get('stocksymbol')
     
 
@@ -106,8 +69,8 @@ def insertintotable(request):
             df.to_csv(''+quote+'.csv',index=False)
         return
 
-    #******************** ARIMA SECTION ********************
-    def ARIMA_ALGO(df):
+    #-----ARIMA-----
+    def ARIMA_ALGORITHM(df):
         uniqueVals = df["Code"].unique()  
         len(uniqueVals)
         df=df.set_index("Code")
@@ -118,7 +81,7 @@ def insertintotable(request):
             history = [x for x in train]
             predictions = list()
             for t in range(len(test)):
-                model = ARIMA(history, order=(6,1 ,0))
+                model = ARIMA(history, order=(6,1,0))
                 model_fit = model.fit(disp=0)
                 output = model_fit.forecast()
                 yhat = output[0]
@@ -162,9 +125,8 @@ def insertintotable(request):
             print("##############################################################################")
             return arima_pred, error_arima
         
-        #************* LSTM SECTION **********************
-
-    def LSTM_ALGO(df):
+    #-----LSTM SECTION------
+    def LSTM_ALGORITHM(df):
         #Split data into training set and test set
         dataset_train=df.iloc[0:int(0.8*len(df)),:]
         dataset_test=df.iloc[int(0.8*len(df)):,:]
@@ -265,6 +227,8 @@ def insertintotable(request):
         
         #Getting original prices back from scaled values
         predicted_stock_price=sc.inverse_transform(predicted_stock_price)
+
+    
         fig = plt.figure(figsize=(7.2,4.8),dpi=65)
         plt.plot(real_stock_price,label='Actual Price')  
         plt.plot(predicted_stock_price,label='Predicted Price')
@@ -291,8 +255,8 @@ def insertintotable(request):
         print("##############################################################################")
         return lstm_pred,error_lstm
 
-    #***************** LINEAR REGRESSION SECTION ******************       
-    def LIN_REG_ALGO(df):
+    #-----LINEAR REGRESSION-----     
+    def LINREG_ALGORITHM(df):
         #No of days to be forcasted in future
         forecast_out = int(7)
         #Price after n days
@@ -329,6 +293,7 @@ def insertintotable(request):
         
         #Testing
         y_test_pred=clf.predict(X_test)
+
         y_test_pred=y_test_pred*(1.04)
         import matplotlib.pyplot as plt2
         fig = plt2.figure(figsize=(7.2,4.8),dpi=65)
@@ -361,18 +326,19 @@ def insertintotable(request):
         stock_full_form = stock_ticker_map[stock_ticker_map['Ticker']==symbol]
         symbol = stock_full_form['Name'].to_list()[0][0:12]
 
-        auth = tweepy.OAuthHandler(ct.consumer_key, ct.consumer_secret)
-        auth.set_access_token(ct.access_token, ct.access_token_secret)
+        auth = tweepy.OAuthHandler(ta.consumer_key, ta.consumer_secret)
+        auth.set_access_token(ta.access_token, ta.access_token_secret)
         user = tweepy.API(auth)
         
-        tweets = tweepy.Cursor(user.search, q=symbol, tweet_mode='extended', lang='en',exclude_replies=True).items(ct.num_of_tweets)
+        tweets = tweepy.Cursor(user.search, q=symbol, tweet_mode='extended', lang='en',exclude_replies=True).items(ta.number_of_tweets)
         
-        tweet_list = [] #List of tweets alongside polarity
+        tweeter_list = [] #List of tweets alongside polarity
         global_polarity = 0 #Polarity of all tweets === Sum of polarities of individual tweets
         tw_list=[] #List of tweets only => to be displayed on web page
         #Count Positive, Negative to plot pie chart
         pos=0 #Num of pos tweets
         neg=1 #Num of negative tweets
+
         for tweet in tweets:
             count=20 #Num of tweets to be displayed on web page
             #Convert to Textblob format for assigning polarity
@@ -381,18 +347,16 @@ def insertintotable(request):
             #Clean
             tw=p.clean(tw)
             #print("-------------------------------CLEANED TWEET-----------------------------")
-            #print(tw)
             #Replace &amp; by &
             tw=re.sub('&amp;','&',tw)
             #Remove :
             tw=re.sub(':','',tw)
             #print("-------------------------------TWEET AFTER REGEX MATCHING-----------------------------")
-            #print(tw)
             #Remove Emojis and Hindi Characters
             tw=tw.encode('ascii', 'ignore').decode('ascii')
-
             #print("-------------------------------TWEET AFTER REMOVING NON ASCII CHARS-----------------------------")
-            #print(tw)
+            # print(tw)
+
             blob = TextBlob(tw)
             polarity = 0 #Polarity of single individual tweet
             for sentence in blob.sentences:
@@ -407,13 +371,13 @@ def insertintotable(request):
             if count > 0:
                 tw_list.append(tw2)
                 
-            tweet_list.append(Tweet.Tweet(tw, polarity))
+            tweeter_list.append(Tweet.Tweet(tw, polarity))
             count=count-1
-        if len(tweet_list) != 0:
-            global_polarity = global_polarity / len(tweet_list)
+        if len(tweeter_list) != 0:
+            global_polarity = global_polarity / len(tweeter_list)
         else:
             global_polarity = global_polarity
-        neutral=ct.num_of_tweets-pos-neg
+        neutral=ta.number_of_tweets-pos-neg
         if neutral<0:
         	neg=neg+neutral
         	neutral=20
@@ -508,9 +472,9 @@ def insertintotable(request):
         df=df2
 
 
-        arima_pred, error_arima=ARIMA_ALGO(df)
-        # lstm_pred, error_lstm=LSTM_ALGO(df)
-        df, lr_pred, forecast_set,mean,error_lr=LIN_REG_ALGO(df)
+        arima_pred, error_arima=ARIMA_ALGORITHM(df)
+        lstm_pred, error_lstm=LSTM_ALGORITHM(df)
+        df, lr_pred, forecast_set,mean,error_lr=LINREG_ALGORITHM(df)
         polarity,tweeters_list,tw_pol,pos,neg,neutral,sizes = retrieving_tweets_polarity(quote)
         
         idea, decision=recommending(df, polarity,today_stock,mean)
@@ -520,16 +484,17 @@ def insertintotable(request):
         today_stock=today_stock.round(2)
        
 
-        return render(request,'predict.html',{'quote':quote,'arima_pred':round(arima_pred,2),
-                               'lr_pred':round(lr_pred,2),'open_s':today_stock['Open'].to_string(index=False),
-                               'close_s':today_stock['Close'].to_string(index=False),'adj_close':today_stock['Adj Close'].to_string(index=False),
-                               'tweeters_list':tweeters_list,'tw_pol':tw_pol,'pos':pos,'neg':neg,'neutral':neutral,'idea':idea,'decision':decision,'high_s':today_stock['High'].to_string(index=False),
-                               'low_s':today_stock['Low'].to_string(index=False),'vol':today_stock['Volume'].to_string(index=False),
-                               'forecast_set':forecast_set,'error_lr':round(error_lr,2),'error_arima':round(error_arima,2)})
-
-        # return render(request,'predict.html',{'quote':quote,'arima_pred':round(arima_pred,2),'lstm_pred':round(lstm_pred,2),
+        # return render(request,'predict.html',{'quote':quote,'arima_pred':round(arima_pred,2),
         #                        'lr_pred':round(lr_pred,2),'open_s':today_stock['Open'].to_string(index=False),
         #                        'close_s':today_stock['Close'].to_string(index=False),'adj_close':today_stock['Adj Close'].to_string(index=False),
-        #                        'tweeters_list':tweeters_list,'tw_pol':tw_pol,'idea':idea,'decision':decision,'high_s':today_stock['High'].to_string(index=False),
+        #                        'tweeters_list':tweeters_list,'tw_pol':tw_pol,'pos':pos,'neg':neg,'neutral':neutral,'idea':idea,'decision':decision,'high_s':today_stock['High'].to_string(index=False),
         #                        'low_s':today_stock['Low'].to_string(index=False),'vol':today_stock['Volume'].to_string(index=False),
-        #                        'forecast_set':forecast_set,'error_lr':round(error_lr,2),'error_arima':round(error_arima,2),'error_lstm':round(error_lstm,2)})
+        #                        'forecast_set':forecast_set,'error_lr':round(error_lr,2),'error_arima':round(error_arima,2)})
+
+        return render(request,'predict.html',{'quote':quote,'arima_pred':round(arima_pred,2),'lstm_pred':round(lstm_pred,2),
+                               'lr_pred':round(lr_pred,2),'open_s':today_stock['Open'].to_string(index=False),
+                               'close_s':today_stock['Close'].to_string(index=False),'adj_close':today_stock['Adj Close'].to_string(index=False),
+                               'tweeters_list':tweeters_list,'tw_pol':tw_pol,'idea':idea,'decision':decision,'high_s':today_stock['High'].to_string(index=False),
+                               'low_s':today_stock['Low'].to_string(index=False),'vol':today_stock['Volume'].to_string(index=False),
+                               'forecast_set':forecast_set,'error_lr':round(error_lr,2),'error_arima':round(error_arima,2),'error_lstm':round(error_lstm,2)})
+ 
