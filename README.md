@@ -21,6 +21,6 @@ pip install requirements.txt
 ```
 #### 4. Run application
 ```bash
-pip install requirements.txt
+python manage.py runserver
 ```
 
