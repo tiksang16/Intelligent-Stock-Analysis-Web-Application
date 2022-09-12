@@ -1,9 +1,8 @@
-#Intelligent Stock Analysis Web Application
+Intelligent Stock Analysis Web Application
 
 This is a stock market prediction web applicatio using machine learning and tweets sentiment analysis. Other function such as user management system and stock bookmarks are provided. Some technical chart are provided using Trading View API. This web app was built in Django.
 
-
-###To Execute
+To Execute
 #### 1. Create Virtual Environment
 ```bash
 python -m venv env
